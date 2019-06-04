@@ -25,6 +25,8 @@ public class SqlController {
     @RequestMapping(value = "/analysis",method = RequestMethod.POST)
     public Object sqlResolve(HttpServletRequest request) {
         String sql= request.getParameter("sql");
+        //将{{.}}替换成？，然后在进行解析
+        sql = sql.replaceAll("\\{\\{(\\.{1}.+?)\\}\\}", "?");
         NewResponse response = new NewResponse();
         if (StringUtils.isEmpty(sql)){
             response.setCode("1");
