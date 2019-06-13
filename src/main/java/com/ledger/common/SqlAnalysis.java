@@ -10,6 +10,8 @@ public class SqlAnalysis {
 
     private List<String> tables;
 
+    private List<String> wheres;
+
     public List<String> getColumns() {
         return columns;
     }
@@ -26,8 +28,16 @@ public class SqlAnalysis {
         this.tables = tables;
     }
 
+    public List<String> getWheres() {
+        return wheres;
+    }
+
+    public void setWheres(List<String> wheres) {
+        this.wheres = wheres;
+    }
+
     //重写toString();
     public String toString(){
-        return "columns:"+columns+";tables:"+tables;
+        return "columns:"+columns+";tables:"+tables+";wheres:"+wheres;
     }
 }
