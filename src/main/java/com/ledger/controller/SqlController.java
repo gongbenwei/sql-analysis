@@ -59,8 +59,7 @@ public class SqlController {
             List<String> tables = new ArrayList<>();
             Relation relation = body.getFrom().get();
             //
-            List<Node> nodes = new ArrayList<>();
-            getAllNode(relation,nodes);
+            List<Node> nodes = getAllNode(relation);
             logger.info("nodes: "+nodes);
             columns = getColumns(select,columns);
             tables = traversalMany(nodes, tables);
@@ -101,20 +100,25 @@ public class SqlController {
     }
 
     //解析拿到所有的底层node
-    public List<Node> getAllNode (Node node, List<Node> nodes){
+    public List<Node> getAllNode (Node node){
+        List<Node> nodes = new ArrayList<>();
         if (node instanceof Join){
             Join join = (Join)node;
             Node leftNode = join.getLeft();
             Node rightNode = join.getRight();
+            List<Node> arr;
             if (!(leftNode instanceof Join)){
                 nodes.add(leftNode);
             }else{
-                getAllNode(leftNode,nodes);
+                arr = getAllNode(leftNode);
+                nodes.addAll(arr);
             }
+
             if (!(rightNode instanceof Join)){
                 nodes.add(rightNode);
             }else{
-                getAllNode(leftNode,nodes);
+                arr = getAllNode(rightNode);
+                nodes.addAll(arr);
             }
         }else{
             nodes.add(node);
