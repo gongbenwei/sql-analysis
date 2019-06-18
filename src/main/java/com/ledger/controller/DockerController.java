@@ -1,17 +1,13 @@
 package com.ledger.controller;
 
-
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * test controller
- */
-@Controller
-public class IndexController {
+@RestController
+public class DockerController {
+	
     @RequestMapping("/")
     public String index() {
-
-        return "index";
+        return "Hello Docker!";
     }
 }
