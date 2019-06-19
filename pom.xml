@@ -20,7 +20,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<docker.image.prefix>springboot</docker.image.prefix>
+		<docker.image.prefix>com.uni-ledger</docker.image.prefix>
 	</properties>
 
 
@@ -64,7 +64,8 @@
 				<version>1.0.0</version>
 				<configuration>
 					<imageName>${docker.image.prefix}/${project.artifactId}</imageName>
-					<dockerDirectory>src/main/docker</dockerDirectory>
+					<!--<dockerDirectory>src/main/docker</dockerDirectory>-->
+					<dockerDirectory>harbor.tusdao.com/prod</dockerDirectory>
 					<resources>
 						<resource>
 							<targetPath>/</targetPath>
