@@ -20,7 +20,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<docker.image.prefix>com.uni-ledger</docker.image.prefix>
+		<docker.image.prefix>hub.switch.uni-ledger.com</docker.image.prefix>
 	</properties>
 
 
@@ -63,9 +63,11 @@
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>1.0.0</version>
 				<configuration>
-					<imageName>${docker.image.prefix}/${project.artifactId}</imageName>
-					<!--<dockerDirectory>src/main/docker</dockerDirectory>-->
-					<dockerDirectory>harbor.tusdao.com/prod</dockerDirectory>
+					<!--推送到私有仓库-->
+					 <imageName>hub.switch.uni-ledger.com/switch</imageName>
+					<!--本地-->
+					<!--<imageName>${docker.image.prefix}/${project.artifactId}</imageName>-->
+					<dockerDirectory>${basedir}/src/main/docker</dockerDirectory>
 					<resources>
 						<resource>
 							<targetPath>/</targetPath>
@@ -73,6 +75,8 @@
 							<include>${project.build.finalName}.jar</include>
 						</resource>
 					</resources>
+					<!-- 与maven配置文件settings.xml中配置的server.id一致，用于推送镜像 -->
+					<serverId>sql-analysis</serverId>
 				</configuration>
 			</plugin>
 			<!-- Docker maven plugin -->
