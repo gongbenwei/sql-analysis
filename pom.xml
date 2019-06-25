@@ -20,7 +20,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<docker.image.prefix>harbor.tusdao.com/prod</docker.image.prefix>
+		<docker.image.prefix>harbor.tusdao.com/switch/dev</docker.image.prefix>
 	</properties>
 
 
