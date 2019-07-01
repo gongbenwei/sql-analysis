@@ -2,6 +2,7 @@ package com.ledger.common;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Resource
 public class SqlAnalysis {
@@ -11,6 +12,8 @@ public class SqlAnalysis {
     private List<String> tables;
 
     private List<String> wheres;
+
+    private Map<String,List<String>> tableColRelation;
 
     public List<String> getColumns() {
         return columns;
@@ -36,8 +39,16 @@ public class SqlAnalysis {
         this.wheres = wheres;
     }
 
+    public Map<String, List<String>> getTableColRelation() {
+        return tableColRelation;
+    }
+
+    public void setTableColRelation(Map<String, List<String>> tableColRelation) {
+        this.tableColRelation = tableColRelation;
+    }
+
     //重写toString();
     public String toString(){
-        return "columns:"+columns+";tables:"+tables+";wheres:"+wheres;
+        return "columns:"+columns+";tables:"+tables+";wheres:"+wheres+";tableColRelation:"+tableColRelation;
     }
 }

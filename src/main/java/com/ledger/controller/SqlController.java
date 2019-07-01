@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,15 +59,18 @@ public class SqlController {
             Select select = body.getSelect();
             List<String> columns = new ArrayList<>();
             List<String> tables = new ArrayList<>();
+            Map tableColRelation = new HashMap<String,List<String>>();
             Relation relation = body.getFrom().get();
             //
             List<Node> nodes = getAllNode(relation);
             logger.info("nodes: "+nodes);
             columns = getColumns(select,columns);
             tables = traversalMany(nodes, tables);
+            tableColRelation = getTableColRelation(tables,columns);
             sqlVo.setColumns(columns);
             sqlVo.setTables(tables);
             sqlVo.setWheres(wheres);
+            sqlVo.setTableColRelation(tableColRelation);
             logger.info("sqlVo: "+sqlVo);
             response.setData(sqlVo);
         }catch (Exception e){
@@ -142,5 +147,37 @@ public class SqlController {
             }
         }
         return tableList;
+    }
+
+    //根据sql语句，拿到table与字段的对应关系，要求sql写法满足table.colName
+    public Map<String,List<String>> getTableColRelation(List<String> tables, List<String> columns){
+        Map tabColRelationMAp = new HashMap<String,List<String>>();
+        for (String table : tables){
+            List<String> colList = new ArrayList<>();
+            String [] aliasedTable = table.split(" ");
+            for (String column : columns){
+                //取得不带别名的列-表名.列名
+                String originalCol = column.split(" ")[0];
+                //将表名.列名根据中间.进行切割
+                int regexIndex = originalCol.indexOf(".");
+                if (regexIndex < 0){
+                    //列名前面没有带表名
+                    continue;
+                }
+                String tabName = originalCol.substring(0,regexIndex);
+                if (aliasedTable.length==1){
+                    if (aliasedTable[0].equals(tabName)){
+                        colList.add(column);
+                    }
+                }
+                if (aliasedTable.length==2){
+                    if (aliasedTable[0].equals(tabName) || aliasedTable[1].equals(tabName)){
+                        colList.add(column);
+                    }
+                }
+            }
+            tabColRelationMAp.put(table,colList);
+        }
+        return tabColRelationMAp;
     }
 }
