@@ -1,5 +1,10 @@
 package com.ledger.controller;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.dialect.hive.parser.HiveStatementParser;
+import com.alibaba.druid.sql.dialect.hive.visitor.HiveSchemaStatVisitor;
+import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.druid.stat.TableStat;
 import com.facebook.presto.sql.parser.SqlParser;
 import com.facebook.presto.sql.tree.*;
 import com.ledger.common.Constant;
@@ -14,10 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,14 +61,14 @@ public class SqlController {
             Select select = body.getSelect();
             List<String> columns = new ArrayList<>();
             List<String> tables = new ArrayList<>();
-            Map tableColRelation = new HashMap<String,List<String>>();
+            Map<String,List<String>> tableColRelation = new HashMap<>();
             Relation relation = body.getFrom().get();
             //
             List<Node> nodes = getAllNode(relation);
             logger.info("nodes: "+nodes);
             columns = getColumns(select,columns);
             tables = traversalMany(nodes, tables);
-            tableColRelation = getTableColRelation(tables,columns);
+            tableColRelation = getTableColRelation(tables,getAllColumn(sql));
             sqlVo.setColumns(columns);
             sqlVo.setTables(tables);
             sqlVo.setWheres(wheres);
@@ -157,27 +159,32 @@ public class SqlController {
             String [] aliasedTable = table.split(" ");
             for (String column : columns){
                 //取得不带别名的列-表名.列名
-                String originalCol = column.split(" ")[0];
+                //String originalCol = column.split(" ")[0];
                 //将表名.列名根据中间.进行切割
-                int regexIndex = originalCol.indexOf(".");
-                if (regexIndex < 0){
-                    //列名前面没有带表名
-                    continue;
-                }
-                String tabName = originalCol.substring(0,regexIndex);
-                if (aliasedTable.length==1){
-                    if (aliasedTable[0].equals(tabName)){
-                        colList.add(column);
-                    }
-                }
-                if (aliasedTable.length==2){
-                    if (aliasedTable[0].equals(tabName) || aliasedTable[1].equals(tabName)){
-                        colList.add(column);
-                    }
+                String tabName = column.split("\\.")[0];
+                String colName = column.split("\\.")[1];
+                if (aliasedTable[0].equals(tabName)){
+                    colList.add(colName);
                 }
             }
-            tabColRelationMAp.put(table,colList);
+            tabColRelationMAp.put(table.split(" ")[0],colList);
         }
         return tabColRelationMAp;
+    }
+
+    //利用alibaba-druid得到所有的列，函数也支持，要求SQL的列的写法是表名.列名
+    public List<String> getAllColumn(String sql){
+        List<String> allComluns = new ArrayList<>();
+        SQLStatementParser parser = new HiveStatementParser(sql);
+        SQLStatement statement = parser.parseStatement();
+        HiveSchemaStatVisitor visitor = new HiveSchemaStatVisitor();
+        statement.accept(visitor);
+        Collection<TableStat.Column> columns = visitor.getColumns();
+        Iterator it=columns.iterator();
+        while (it.hasNext()){
+            allComluns.add(it.next().toString());
+        }
+        logger.info("alibaba-druid get col: "+allComluns);
+        return allComluns;
     }
 }
