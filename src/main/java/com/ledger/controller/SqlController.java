@@ -162,8 +162,8 @@ public class SqlController {
                 //String originalCol = column.split(" ")[0];
                 //将表名.列名根据中间.进行切割
                 String tabName = column.split("\\.")[0];
-                String colName = column.split("\\.")[1];
                 if (aliasedTable[0].equals(tabName)){
+                    String colName = column.split("\\.")[1];
                     colList.add(colName);
                 }
             }
