@@ -13,10 +13,7 @@ import com.ledger.common.SqlAnalysis;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -33,8 +30,8 @@ public class SqlController {
 
     @ResponseBody
     @RequestMapping(value = "/analysis",method = RequestMethod.POST)
-    public Object sqlResolve(HttpServletRequest request) {
-        String sql= request.getParameter("sql");
+    public Object sqlResolve(@RequestBody SqlAnalysis sqlAnalysis) {
+        String sql= sqlAnalysis.getSql();
         logger.info("sql: "+sql);
         NewResponse response = new NewResponse();
         if (StringUtils.isEmpty(sql)){
@@ -73,6 +70,7 @@ public class SqlController {
             sqlVo.setTables(tables);
             sqlVo.setWheres(wheres);
             sqlVo.setTableColRelation(tableColRelation);
+            sqlVo.setSql(sql);
             logger.info("sqlVo: "+sqlVo);
             response.setData(sqlVo);
         }catch (Exception e){

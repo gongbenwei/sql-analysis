@@ -7,6 +7,8 @@ import java.util.Map;
 @Resource
 public class SqlAnalysis {
 
+    private String sql;
+
     private List<String> columns;
 
     private List<String> tables;
@@ -47,8 +49,16 @@ public class SqlAnalysis {
         this.tableColRelation = tableColRelation;
     }
 
+    public String getSql() {
+        return sql;
+    }
+
+    public void setSql(String sql) {
+        this.sql = sql;
+    }
+
     //重写toString();
     public String toString(){
-        return "columns:"+columns+";tables:"+tables+";wheres:"+wheres+";tableColRelation:"+tableColRelation;
+        return "columns:"+columns+";\ntables:"+tables+";\nwheres:"+wheres+";\ntableColRelation:"+tableColRelation+";\nsql:"+sql;
     }
 }
